@@ -40,8 +40,14 @@
                 <a href="custom_fields.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'custom_fields.php' ? 'active' : ''; ?>">
                     <i class="fas fa-th-list"></i> الحقول المخصصة
                 </a>
+                <a href="social_links.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'social_links.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-share-alt"></i> روابط التواصل
+                </a>
                 <a href="settings.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'settings.php' ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i> الإعدادات
+                </a>
+                <a href="account.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'account.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-user-circle"></i> حسابي
                 </a>
                 <a href="../index.php" class="nav-item" target="_blank">
                     <i class="fas fa-eye"></i> معاينة الموقع
