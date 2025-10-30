@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $page_title ?? 'لوحة التحكم'; ?></title>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- الشريط الجانبي -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-shield"></i> لوحة التحكم</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-home"></i> الرئيسية
+                </a>
+                <a href="projects.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'projects.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-briefcase"></i> المشاريع
+                </a>
+                <a href="add_project.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'add_project.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-plus"></i> إضافة مشروع
+                </a>
+                <a href="settings.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'settings.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </a>
+                <a href="../index.php" class="nav-item" target="_blank">
+                    <i class="fas fa-eye"></i> معاينة الموقع
+                </a>
+                <a href="logout.php" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </a>
+            </nav>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <header class="top-bar">
+                <div class="top-bar-content">
+                    <h1><?php echo $page_title ?? 'لوحة التحكم'; ?></h1>
+                    <div class="user-info">
+                        <span>مرحباً، <?php echo htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username']); ?></span>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
