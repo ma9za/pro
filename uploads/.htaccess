@@ -1,0 +1,8 @@
+# منع تنفيذ PHP في مجلد uploads
+php_flag engine off
+
+# السماح فقط بعرض الصور
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>

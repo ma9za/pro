@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+
+// التحقق من التثبيت
+require_once __DIR__ . '/../includes/install_check.php';
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -9,6 +13,12 @@ if (isLoggedIn()) {
 }
 
 $error = '';
+$success = '';
+
+// رسالة نجاح التثبيت
+if (isset($_GET['installed']) && $_GET['installed'] == '1') {
+    $success = 'تم تثبيت الموقع بنجاح! يمكنك الآن تسجيل الدخول';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = cleanInput($_POST['username'] ?? '');
@@ -55,6 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p>يرجى تسجيل الدخول للمتابعة</p>
             </div>
 
+            <?php if ($success): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <?php echo $success; ?>
+                </div>
+            <?php endif; ?>
+
             <?php if ($error): ?>
                 <div class="alert alert-error">
                     <i class="fas fa-exclamation-circle"></i>
@@ -88,13 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="../index.php">
                     <i class="fas fa-home"></i> العودة للصفحة الرئيسية
                 </a>
-            </div>
-
-            <div class="login-info">
-                <p><strong>معلومات تسجيل الدخول الافتراضية:</strong></p>
-                <p>اسم المستخدم: <code>admin</code></p>
-                <p>كلمة المرور: <code>admin123</code></p>
-                <small>يُنصح بتغيير كلمة المرور بعد أول تسجيل دخول</small>
             </div>
         </div>
     </div>

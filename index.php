@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/config/config.php';
+
+// التحقق من التثبيت
+require_once __DIR__ . '/includes/install_check.php';
+
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 

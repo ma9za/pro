@@ -1,9 +1,7 @@
 <?php
-// إعدادات قاعدة البيانات
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'portfolio_db');
+// إعدادات قاعدة البيانات SQLite
+define('DB_PATH', __DIR__ . '/../database/portfolio.db');
+define('INSTALL_LOCK', __DIR__ . '/../installed.lock');
 
 // إعدادات الموقع
 define('SITE_URL', 'http://localhost/pro');

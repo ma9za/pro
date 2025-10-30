@@ -7,16 +7,26 @@ class Database {
 
     private function __construct() {
         try {
+            // التأكد من وجود مجلد database
+            $dbDir = dirname(DB_PATH);
+            if (!is_dir($dbDir)) {
+                mkdir($dbDir, 0755, true);
+            }
+
+            // الاتصال بـ SQLite
             $this->conn = new PDO(
-                "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
-                DB_USER,
-                DB_PASS,
+                "sqlite:" . DB_PATH,
+                null,
+                null,
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false
                 ]
             );
+
+            // تفعيل Foreign Keys في SQLite
+            $this->conn->exec("PRAGMA foreign_keys = ON");
         } catch(PDOException $e) {
             die("فشل الاتصال بقاعدة البيانات: " . $e->getMessage());
         }
