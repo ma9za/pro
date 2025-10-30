@@ -59,7 +59,41 @@ CREATE TABLE IF NOT EXISTS messages (
     subject TEXT NOT NULL,
     message TEXT NOT NULL,
     is_read INTEGER DEFAULT 0,
+    is_replied INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- جدول مواقع التواصل الاجتماعي (ديناميكية)
+CREATE TABLE IF NOT EXISTS social_links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    platform_name TEXT NOT NULL,
+    icon_class TEXT NOT NULL,
+    url TEXT NOT NULL,
+    display_order INTEGER DEFAULT 0,
+    is_visible INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- جدول الحقول المخصصة للمشاريع
+CREATE TABLE IF NOT EXISTS project_custom_fields (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    field_name TEXT NOT NULL,
+    field_label TEXT NOT NULL,
+    field_type TEXT DEFAULT 'text',
+    field_options TEXT,
+    is_required INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- جدول قيم الحقول المخصصة للمشاريع
+CREATE TABLE IF NOT EXISTS project_field_values (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL,
+    field_id INTEGER NOT NULL,
+    field_value TEXT,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (field_id) REFERENCES project_custom_fields(id) ON DELETE CASCADE
 );
 
 -- ملاحظة: بيانات المستخدم والإعدادات تُضاف عبر صفحة التثبيت (install.php)
