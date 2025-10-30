@@ -425,6 +425,11 @@ body {
     font-weight: 500;
 }
 
+.badge-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
 .badge-success {
     background: var(--success-color);
     color: white;

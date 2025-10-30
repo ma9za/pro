@@ -24,6 +24,22 @@
                 <a href="add_project.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'add_project.php' ? 'active' : ''; ?>">
                     <i class="fas fa-plus"></i> إضافة مشروع
                 </a>
+                <a href="messages.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'messages.php' || basename($_SERVER['PHP_SELF']) === 'get_message.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-envelope"></i> الرسائل
+                    <?php
+                    // عرض عدد الرسائل غير المقروءة
+                    if (isset($db)) {
+                        $stmt = $db->query("SELECT COUNT(*) as unread FROM messages WHERE is_read = 0");
+                        $unread = $stmt->fetch()['unread'];
+                        if ($unread > 0) {
+                            echo "<span style='background: var(--danger-color); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem; margin-right: auto;'>$unread</span>";
+                        }
+                    }
+                    ?>
+                </a>
+                <a href="custom_fields.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'custom_fields.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-th-list"></i> الحقول المخصصة
+                </a>
                 <a href="settings.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'settings.php' ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i> الإعدادات
                 </a>
