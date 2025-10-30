@@ -39,7 +39,27 @@ CREATE TABLE IF NOT EXISTS site_settings (
     github_url TEXT,
     linkedin_url TEXT,
     twitter_url TEXT,
+    -- SMTP Settings
+    smtp_host TEXT,
+    smtp_port INTEGER DEFAULT 587,
+    smtp_username TEXT,
+    smtp_password TEXT,
+    smtp_encryption TEXT DEFAULT 'tls',
+    smtp_from_email TEXT,
+    smtp_from_name TEXT,
+    smtp_enabled INTEGER DEFAULT 0,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- جدول الرسائل
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    is_read INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ملاحظة: بيانات المستخدم والإعدادات تُضاف عبر صفحة التثبيت (install.php)
