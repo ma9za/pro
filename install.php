@@ -62,25 +62,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 require_once __DIR__ . '/config/database.php';
                 $db = Database::getInstance()->getConnection();
 
-                // إنشاء الجداول من ملف database.sql
-                $sql_file = file_get_contents(__DIR__ . '/database.sql');
+                // إنشاء الجداول مباشرة
 
-                // تنظيف SQL من التعليقات
-                $sql_commands = array_filter(
-                    explode(';', $sql_file),
-                    function($cmd) {
-                        $cmd = trim($cmd);
-                        return !empty($cmd) && !str_starts_with($cmd, '--');
-                    }
-                );
+                // جدول المستخدمين
+                $db->exec("CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL,
+                    email TEXT UNIQUE NOT NULL,
+                    full_name TEXT,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
 
-                // تنفيذ كل أمر SQL
-                foreach ($sql_commands as $command) {
-                    $command = trim($command);
-                    if (!empty($command) && !str_starts_with($command, '--')) {
-                        $db->exec($command);
-                    }
-                }
+                // جدول المشاريع
+                $db->exec("CREATE TABLE IF NOT EXISTS projects (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    image TEXT,
+                    project_url TEXT,
+                    github_url TEXT,
+                    category TEXT,
+                    technologies TEXT,
+                    display_order INTEGER DEFAULT 0,
+                    is_featured INTEGER DEFAULT 0,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
+                // جدول معلومات الموقع
+                $db->exec("CREATE TABLE IF NOT EXISTS site_settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    site_title TEXT DEFAULT 'موقعي التعريفي',
+                    site_description TEXT,
+                    about_me TEXT,
+                    profile_image TEXT,
+                    email TEXT,
+                    phone TEXT,
+                    github_url TEXT,
+                    linkedin_url TEXT,
+                    twitter_url TEXT,
+                    smtp_host TEXT,
+                    smtp_port INTEGER DEFAULT 587,
+                    smtp_username TEXT,
+                    smtp_password TEXT,
+                    smtp_encryption TEXT DEFAULT 'tls',
+                    smtp_from_email TEXT,
+                    smtp_from_name TEXT,
+                    smtp_enabled INTEGER DEFAULT 0,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
+                // جدول الرسائل
+                $db->exec("CREATE TABLE IF NOT EXISTS messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    subject TEXT NOT NULL,
+                    message TEXT NOT NULL,
+                    is_read INTEGER DEFAULT 0,
+                    is_replied INTEGER DEFAULT 0,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
+                // جدول روابط التواصل الاجتماعي
+                $db->exec("CREATE TABLE IF NOT EXISTS social_links (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    platform_name TEXT NOT NULL,
+                    icon_class TEXT NOT NULL,
+                    url TEXT NOT NULL,
+                    display_order INTEGER DEFAULT 0,
+                    is_visible INTEGER DEFAULT 1,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
+                // جدول الحقول المخصصة
+                $db->exec("CREATE TABLE IF NOT EXISTS project_custom_fields (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    field_name TEXT NOT NULL,
+                    field_label TEXT NOT NULL,
+                    field_type TEXT DEFAULT 'text',
+                    field_options TEXT,
+                    is_required INTEGER DEFAULT 0,
+                    display_order INTEGER DEFAULT 0,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
+                // جدول قيم الحقول المخصصة
+                $db->exec("CREATE TABLE IF NOT EXISTS project_field_values (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    project_id INTEGER NOT NULL,
+                    field_id INTEGER NOT NULL,
+                    field_value TEXT,
+                    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                    FOREIGN KEY (field_id) REFERENCES project_custom_fields(id) ON DELETE CASCADE
+                )");
 
                 // إضافة المستخدم الإداري
                 $hashed_password = password_hash($admin_password, PASSWORD_DEFAULT);
