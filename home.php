@@ -17,6 +17,10 @@ $projects = $stmt->fetchAll();
 // جلب الفئات
 $stmt = $db->query("SELECT DISTINCT category FROM projects WHERE category IS NOT NULL AND category != '' ORDER BY category");
 $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+// جلب روابط التواصل الاجتماعي
+$stmt = $db->query("SELECT * FROM social_links WHERE is_visible = 1 ORDER BY display_order ASC, id ASC");
+$social_links = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -95,26 +99,14 @@ $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
                 <!-- Social Links -->
                 <div class="social-links">
-                    <?php if (!empty($site_info['github_url'])): ?>
-                        <a href="<?php echo htmlspecialchars($site_info['github_url']); ?>" target="_blank" class="social-link">
-                            <i class="fab fa-github"></i>
+                    <?php foreach ($social_links as $social_link): ?>
+                        <a href="<?php echo htmlspecialchars($social_link['url']); ?>"
+                           target="_blank"
+                           class="social-link"
+                           title="<?php echo htmlspecialchars($social_link['platform_name']); ?>">
+                            <i class="<?php echo htmlspecialchars($social_link['icon_class']); ?>"></i>
                         </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site_info['linkedin_url'])): ?>
-                        <a href="<?php echo htmlspecialchars($site_info['linkedin_url']); ?>" target="_blank" class="social-link">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site_info['twitter_url'])): ?>
-                        <a href="<?php echo htmlspecialchars($site_info['twitter_url']); ?>" target="_blank" class="social-link">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site_info['email'])): ?>
-                        <a href="mailto:<?php echo htmlspecialchars($site_info['email']); ?>" class="social-link">
-                            <i class="fas fa-envelope"></i>
-                        </a>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
 

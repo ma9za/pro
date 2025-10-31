@@ -4,6 +4,10 @@ require_once __DIR__ . '/../config/database.php';
 
 $db = Database::getInstance()->getConnection();
 
+// جلب الحقول المخصصة
+$stmt = $db->query("SELECT * FROM project_custom_fields ORDER BY display_order ASC, id ASC");
+$custom_fields = $stmt->fetchAll();
+
 $message = '';
 $message_type = '';
 $errors = [];
@@ -22,6 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // التحقق من البيانات
     if (empty($title)) {
         $errors[] = 'عنوان المشروع مطلوب';
+    }
+
+    // التحقق من الحقول المخصصة المطلوبة
+    foreach ($custom_fields as $field) {
+        if ($field['is_required'] == 1) {
+            $field_value = $_POST['custom_field_' . $field['id']] ?? '';
+            if (empty(trim($field_value))) {
+                $errors[] = 'الحقل "' . $field['field_label'] . '" مطلوب';
+            }
+        }
     }
 
     // رفع الصورة
@@ -51,6 +65,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'display_order' => $display_order,
                 'is_featured' => $is_featured
             ]);
+
+            // الحصول على ID المشروع المُضاف
+            $project_id = $db->lastInsertId();
+
+            // حفظ قيم الحقول المخصصة
+            foreach ($custom_fields as $field) {
+                $field_value = $_POST['custom_field_' . $field['id']] ?? '';
+                if (!empty(trim($field_value))) {
+                    $stmt = $db->prepare("
+                        INSERT INTO project_field_values (project_id, field_id, field_value)
+                        VALUES (?, ?, ?)
+                    ");
+                    $stmt->execute([$project_id, $field['id'], trim($field_value)]);
+                }
+            }
 
             redirect('projects.php');
         } catch (PDOException $e) {
@@ -131,6 +160,63 @@ include __DIR__ . '/includes/header.php';
         <input type="file" id="image" name="image" accept="image/*">
         <small>الأنواع المسموحة: JPG, PNG, GIF, WebP (الحد الأقصى: 5MB)</small>
     </div>
+
+    <?php if (!empty($custom_fields)): ?>
+        <div class="form-section" style="background: #f0f7ff; border: 1px solid #0ea5e9; margin: 2rem 0;">
+            <h3 style="color: #075985; margin-bottom: 1.5rem;">
+                <i class="fas fa-th-list"></i> الحقول المخصصة
+            </h3>
+            <div class="form-row">
+                <?php foreach ($custom_fields as $field): ?>
+                    <div class="form-group">
+                        <label for="custom_field_<?php echo $field['id']; ?>">
+                            <?php echo htmlspecialchars($field['field_label']); ?>
+                            <?php if ($field['is_required']): ?>
+                                <span class="required">*</span>
+                            <?php endif; ?>
+                        </label>
+
+                        <?php if ($field['field_type'] === 'textarea'): ?>
+                            <textarea
+                                id="custom_field_<?php echo $field['id']; ?>"
+                                name="custom_field_<?php echo $field['id']; ?>"
+                                rows="4"
+                                <?php echo $field['is_required'] ? 'required' : ''; ?>
+                            ><?php echo htmlspecialchars($_POST['custom_field_' . $field['id']] ?? ''); ?></textarea>
+
+                        <?php elseif ($field['field_type'] === 'select'): ?>
+                            <select
+                                id="custom_field_<?php echo $field['id']; ?>"
+                                name="custom_field_<?php echo $field['id']; ?>"
+                                <?php echo $field['is_required'] ? 'required' : ''; ?>
+                            >
+                                <option value="">-- اختر --</option>
+                                <?php
+                                $options = explode("\n", $field['field_options']);
+                                foreach ($options as $option) {
+                                    $option = trim($option);
+                                    if (!empty($option)) {
+                                        $selected = ($_POST['custom_field_' . $field['id']] ?? '') === $option ? 'selected' : '';
+                                        echo '<option value="' . htmlspecialchars($option) . '" ' . $selected . '>' . htmlspecialchars($option) . '</option>';
+                                    }
+                                }
+                                ?>
+                            </select>
+
+                        <?php else: ?>
+                            <input
+                                type="<?php echo htmlspecialchars($field['field_type']); ?>"
+                                id="custom_field_<?php echo $field['id']; ?>"
+                                name="custom_field_<?php echo $field['id']; ?>"
+                                value="<?php echo htmlspecialchars($_POST['custom_field_' . $field['id']] ?? ''); ?>"
+                                <?php echo $field['is_required'] ? 'required' : ''; ?>
+                            >
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
 
     <div class="form-row">
         <div class="form-group">
